@@ -1,1 +1,3 @@
-# telemetry_analysis_tt
+# Telemetry analysis - test task
+
+pip install pandas matplotlib seaborn numpy
