@@ -1,6 +1,6 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
-
+from tkinter import ttk, messagebox, filedialog
+import pandas as pd
 
 class MainApplication(ttk.Frame):  # Графический интерфейс
     def __init__(self, parent, *args, **kwargs):
@@ -10,6 +10,9 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         self.parent.geometry("1200x800")
         icon = tk.PhotoImage(file="static/ping.png")
         self.parent.iconphoto(True, icon)
+
+        self.export_menu = None # Для обновления кнопок
+        self.df = None # Хранение загруженных данных
 
         self.interface_elements()
         self.setup_layout()
@@ -35,22 +38,46 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         
         file_menu = tk.Menu(menubar, tearoff=0)  # Добавил выпадающие окна, без открепления
         menubar.add_cascade(label="Файл", menu=file_menu)
-        file_menu.add_command(label="Открыть...", accelerator="Ctrl+O")
-        self.parent.bind('<Control-o>', self.open()) # Горячие клавиши 
+        file_menu.add_command(label="Открыть...", accelerator="Ctrl+O", command=self.btn_open)
+        self.parent.bind('<Control-o>', self.btn_open) # Горячие клавиши 
         file_menu.add_separator()
-        file_menu.add_command(label="Выход", command=self.exit)
+        file_menu.add_command(label="Выход", command=self.btn_exit)
         
-        export_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Экспорт", menu=export_menu)
-        export_menu.add_command(label="Экспорт графиков...", state="disabled")  # Пункт 8.1.4 в tt
-        export_menu.add_command(label="Экспорт статистики...", state="disabled")
+        self.export_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Экспорт", menu=self.export_menu)
+        self.export_menu.add_command(label="Экспорт графиков...", state="disabled")  # Пункт 8.1.4 в tt
+        self.export_menu.add_command(label="Экспорт статистики...", state="disabled")
         
         help_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Справка", menu=help_menu)
-        help_menu.add_command(label="О программе", command=self.about)
+        help_menu.add_command(label="О программе", command=self.btn_about)
 
-    def open(self): # Реализовать
-        ...
+    def btn_open(self): # Реализовать
+        """Обработчик кнопки 'Открыть'"""
+        file_path = filedialog.askopenfilename(
+            title="Выберите файл телеметрии",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
+        )
+        if file_path:
+            self.status_var.set(f"Загрузка файла: {file_path}...")
+            self.update_idletasks()  # Обновляю статус-бар
+
+            # TODO:  Сделать файл и функцию для загрузки данных
+
+            try:
+                self.df = pd.read_csv(file_path)
+                self.status_var.set(f"Загружено: {len(self.df)} записей")
+                self.enable_export_menus()
+                # TODO: Здесь будет вызов функции для создания вкладок и графиков
+                messagebox.showinfo("Успех", "Файл успешно загружен!\n\n(Заглушка)")
+            except Exception as e:
+                messagebox.showerror("Ошибка", f"Не удалось загрузить файл:\n{str(e)}")
+                self.status_var.set("Ошибка загрузки файла")
+
+    def enable_export_menus(self):
+        """Активирует пункты меню экспорта после загрузки данных"""
+        self.export_menu.entryconfig(0, state="normal")  # Первый пункт
+        self.export_menu.entryconfig(1, state="normal")  # Второй пункт
 
     def export_graphs(self):
         """Обработчик кнопки 'Экспорт графиков'"""
@@ -60,7 +87,7 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         """Обработчик кнопки 'Экспорт статистики'"""
         messagebox.showinfo("Экспорт", "Функция будет реализована...")
 
-    def about(self):
+    def btn_about(self):
         """Обработчик кнопки 'О программе'"""
         about_text = """
         Анализатор телеметрии
@@ -73,7 +100,7 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         """
         messagebox.showinfo("О программе", about_text)
 
-    def exit(self):
+    def btn_exit(self):
         """Выход из приложения"""
         self.parent.quit()
 
