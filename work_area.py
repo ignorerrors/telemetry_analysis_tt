@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
-
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 
 def create_basic_info_tab(notebook, df):
     """Вкладка с информацией о загруженных данных"""
@@ -31,7 +32,7 @@ def create_basic_info_tab(notebook, df):
     return frame
 
 
-def create_plots_tab(notebook, df):
+def create_statics_tab(notebook, df):
     """Вкладка со статистикой параметров"""
     frame = ttk.Frame(notebook)
     notebook.add(frame, text="Статистика")  # Кнопка для статистики
@@ -61,4 +62,35 @@ def create_plots_tab(notebook, df):
     tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
+    return frame
+
+
+def create_plots_tab(notebook, df):
+    """Вкладка с графиками параметров"""
+    frame = ttk.Frame(notebook)
+    notebook.add(frame, text="Графики")  # Кнопка для статистики
+
+    control_frame = ttk.Frame(frame) # Фрейм для выбора параметров
+    control_frame.pack(fill=tk.X, padx=10, pady=5)
+
+    # Выбор параметра для оси X
+    ttk.Label(control_frame, text="Ось X:").grid(row=0, column=0, padx=5, pady=5)
+    x_var = tk.StringVar(value="Timestamp")
+    x_combobox = ttk.Combobox(control_frame, textvariable=x_var, state="readonly")
+    x_combobox['values'] = list(df.columns)
+    x_combobox.grid(row=0, column=1, padx=5, pady=5)
+
+    # Выбор параметра для оси Y
+    ttk.Label(control_frame, text="Ось Y:").grid(row=0, column=2, padx=5, pady=5)
+    y_var = tk.StringVar(value="Timestamp")
+    y_combobox = ttk.Combobox(control_frame, textvariable=y_var, state="readonly")
+    y_combobox['values'] = list(df.columns)
+    y_combobox.grid(row=0, column=3, padx=5, pady=5)
+
+    plot_btn = ttk.Button(control_frame, text="Построить график")
+    
+    plot_btn.grid(row=0, column=4, padx=5, pady=5) # Размещение кнопки
+    plot_frame = ttk.Frame(frame) # Фрейм для графика
+    plot_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+    
     return frame

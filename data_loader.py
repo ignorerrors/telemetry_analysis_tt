@@ -48,6 +48,6 @@ def export_statistics_to_txt(df, filename):
             f.write(f"Файл сгенерирован: {pd.Timestamp.now()}\n")
         return True
 
-    except Exception as e:
+    except Exception as e: # pylint: disable=W0718
         print(f"Ошибка экспорта статистики: {e}")
         return False

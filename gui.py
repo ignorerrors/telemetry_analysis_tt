@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from data_loader import load_telemetry_data, export_statistics_to_txt
-from work_area import create_basic_info_tab, create_plots_tab
+from work_area import create_basic_info_tab, create_statics_tab, create_plots_tab
 
 class MainApplication(ttk.Frame):  # Графический интерфейс
     def __init__(self, parent, *args, **kwargs):
@@ -66,6 +66,7 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
             self.notebook.forget(tab)
 
         create_basic_info_tab(self.notebook, self.df)
+        create_statics_tab(self.notebook, self.df)
         create_plots_tab(self.notebook, self.df)
 
     def btn_open(self):
@@ -99,7 +100,8 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         """Обработчик кнопки 'Экспорт статистики'"""
         filename="export_stat_grph/file_statistics.txt" # При изменении названия поменять в .gitignore
         export_statistics_to_txt(self.df, filename)
-        messagebox.showinfo("Экспорт статистики", f"Функция была экспортирована в {filename}")
+        self.status_var.set(f"Статистика была экспортирована в {filename}")
+        messagebox.showinfo("Экспорт статистики", f"Статистика была экспортирована в {filename}")
 
     def btn_about(self):
         """Обработчик кнопки 'О программе'"""
