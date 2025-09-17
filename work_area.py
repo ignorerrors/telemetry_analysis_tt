@@ -87,10 +87,42 @@ def create_plots_tab(notebook, df):
     y_combobox['values'] = list(df.columns)
     y_combobox.grid(row=0, column=3, padx=5, pady=5)
 
-    plot_btn = ttk.Button(control_frame, text="Построить график")
+    plot_btn = ttk.Button(control_frame, text="Построить график", 
+                         command=lambda: plot_data(df, x_var.get(), y_var.get(), plot_frame))
     
     plot_btn.grid(row=0, column=4, padx=5, pady=5) # Размещение кнопки
     plot_frame = ttk.Frame(frame) # Фрейм для графика
     plot_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
     
     return frame
+
+def plot_data(df, x_col, y_col, parent_frame):
+    """Строит график выбранных данных"""
+    # Очищаю предыдущий график
+    for widget in parent_frame.winfo_children():
+        widget.destroy()
+    
+    # Проверка, передаются ли данные
+    if not x_col or not y_col:
+        return
+    
+    try:
+        # Создаю фигуру matplotlib
+        fig = Figure(figsize=(10, 6))  # В дюймах
+        ax = fig.add_subplot(111)  #  1x1 сетка, первая позиция
+        
+        # Строю график
+        ax.plot(df[x_col], df[y_col])
+        ax.set_xlabel(x_col)
+        ax.set_ylabel(y_col)
+        ax.set_title(f"{x_col} : {y_col}")
+        ax.grid(True) # Включение сетки на графике
+        
+        # Встраиваю в Tkinter
+        canvas = FigureCanvasTkAgg(fig, parent_frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+        
+    except Exception as e:
+        error_label = ttk.Label(parent_frame, text=f"Ошибка построения: {str(e)}", foreground="red")
+        error_label.pack(pady=10)

@@ -93,15 +93,50 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         self.export_menu.entryconfig(1, state="normal")
 
     def export_graphs(self):
-        """Обработчик кнопки 'Экспорт графиков'"""
-        messagebox.showinfo("Экспорт графиков", "Функция будет реализована...")
-
+        """Экспорт графиков"""
+        file_path = filedialog.asksaveasfilename(
+            title="Сохранить графики",
+            defaultextension=".png",
+            filetypes=[
+                ("PNG files", "*.png"),
+                ("PDF files", "*.pdf"),
+                ("Все файлы", "*.*")
+            ]
+        )
+        
+        if file_path:
+            # Здесь будет логика экспорта графиков
+            messagebox.showinfo(
+                "Экспорт графиков", 
+                f"Графики будут сохранены в: {file_path}"
+            )
+    
     def export_stats(self):
-        """Обработчик кнопки 'Экспорт статистики'"""
-        filename="export_stat_grph/file_statistics.txt" # При изменении названия поменять в .gitignore
-        export_statistics_to_txt(self.df, filename)
-        self.status_var.set(f"Статистика была экспортирована в {filename}")
-        messagebox.showinfo("Экспорт статистики", f"Статистика была экспортирована в {filename}")
+        """Экспорт статистики"""
+        default_filename = "telemetry_statistics.txt"
+        file_path = filedialog.asksaveasfilename(
+            title="Сохранить статистику",
+            initialfile=default_filename,
+            defaultextension=".txt",
+            filetypes=[
+                ("Текстовые файлы", "*.txt"),
+                ("Все файлы", "*.*")
+            ]
+        )
+        
+        if file_path:
+            try:
+                export_statistics_to_txt(self.df, file_path)
+                self.status_var.set(f"Статистика экспортирована: {file_path}")
+                messagebox.showinfo(
+                    "Успех", 
+                    f"Статистика успешно экспортирована в:\n{file_path}"
+                )
+            except Exception as e:
+                messagebox.showerror(
+                    "Ошибка экспорта", 
+                    f"Не удалось экспортировать статистику:\n{str(e)}"
+                )
 
     def btn_about(self):
         """Обработчик кнопки 'О программе'"""
