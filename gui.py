@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
-from data_loader import load_telemetry_data
-from work_area import create_basic_info_tab
+from data_loader import load_telemetry_data, export_statistics_to_txt
+from work_area import create_basic_info_tab, create_plots_tab
 
 class MainApplication(ttk.Frame):  # Графический интерфейс
     def __init__(self, parent, *args, **kwargs):
@@ -25,9 +25,7 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
 
         self.status_var = tk.StringVar()  # Статус бар
         self.status_var.set("Готов к работе")  # RIDGE - эффект выпуклой выемки, W - левый край
-        self.status_bar = ttk.Label(
-            self.parent, textvariable=self.status_var, relief=tk.RIDGE, anchor=tk.W
-        )
+        self.status_bar = ttk.Label(self.parent, textvariable=self.status_var, relief=tk.RIDGE, anchor=tk.W)
 
     def setup_layout(self):
         """Расстановка элементов в окне"""
@@ -49,20 +47,26 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         file_menu.add_command(label="Выход", command=self.btn_exit)
 
         self.export_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Экспорт", menu=self.export_menu)
-        self.export_menu.add_command(label="Экспорт графиков...", state="disabled")  # Пункт 8.1.4 в tt
-        self.export_menu.add_command(label="Экспорт статистики...", state="disabled")
+        menubar.add_cascade(label="Экспорт", menu=self.export_menu)  # Пункт 8.1.4 в tt
+        self.export_menu.add_command(
+            label="Экспорт графиков...", state="disabled", command=self.export_graphs
+            )
+        self.export_menu.add_command(
+            label="Экспорт статистики...", state="disabled", command=self.export_stats
+            )
 
         help_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Справка", menu=help_menu)
         help_menu.add_command(label="О программе", command=self.btn_about)
 
     def create_tabs(self):
-        """Блок контент"""
+        """Создание вкладок с данными"""
+        # Очищаем существующие вкладки
         for tab in self.notebook.tabs():
             self.notebook.forget(tab)
 
-        create_basic_info_tab(self)
+        create_basic_info_tab(self.notebook, self.df)
+        create_plots_tab(self.notebook, self.df)
 
     def btn_open(self):
         """Обработчик кнопки 'Открыть'"""
@@ -89,11 +93,13 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
 
     def export_graphs(self):
         """Обработчик кнопки 'Экспорт графиков'"""
-        messagebox.showinfo("Экспорт", "Функция будет реализована...")
+        messagebox.showinfo("Экспорт графиков", "Функция будет реализована...")
 
     def export_stats(self):
         """Обработчик кнопки 'Экспорт статистики'"""
-        messagebox.showinfo("Экспорт", "Функция будет реализована...")
+        filename="export_stat_grph/file_statistics.txt" # При изменении названия поменять в .gitignore
+        export_statistics_to_txt(self.df, filename)
+        messagebox.showinfo("Экспорт статистики", f"Функция была экспортирована в {filename}")
 
     def btn_about(self):
         """Обработчик кнопки 'О программе'"""
