@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
-from data_loader import load_telemetry_data, export_statistics_to_txt
+from data_loader import load_telemetry_data, export_statistics_to_txt, export_plot_as_png
 from work_area import create_basic_info_tab, create_statics_tab, create_plots_tab
 import sv_ttk
 
@@ -100,8 +100,10 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
 
     def export_graphs(self):
         """Экспорт графиков"""
+        default_filename = "telemetry_graph.png"
         file_path = filedialog.asksaveasfilename(
-            title="Сохранить графики",
+            title="Сохранить статистику",
+            initialfile=default_filename,
             defaultextension=".png",
             filetypes=[
                 ("PNG files", "*.png"),
@@ -111,11 +113,20 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         )
         
         if file_path:
-            # Здесь будет логика экспорта графиков
-            messagebox.showinfo(
-                "Экспорт графиков", 
-                f"Графики будут сохранены в: {file_path}"
-            )
+            try:
+                d = create_plots_tab(self.notebook, self.df)
+                a = export_plot_as_png(self.df, d, file_path)
+                a.savefig(file_path, dpi=300, bbox_inches='tight')
+                self.status_var.set(f"График сохранен как: {file_path}")
+                messagebox.showinfo(
+                    "Успех", 
+                    f"График успешно экспортирован в:\n{file_path}"
+                )
+            except Exception as e:
+                messagebox.showerror(
+                    "Ошибка экспорта", 
+                    f"Не удалось экспортировать график:\n{str(e)}"
+                    )
     
     def export_stats(self):
         """Экспорт статистики"""

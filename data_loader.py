@@ -1,6 +1,5 @@
 import pandas as pd
-
-
+from matplotlib.figure import Figure
 def load_telemetry_data(file_path):
     """Загружаю и обрабатываю CSV файл с телеметрией uav"""
     try:
@@ -51,3 +50,23 @@ def export_statistics_to_txt(df, filename):
     except Exception as e: # pylint: disable=W0718
         print(f"Ошибка экспорта статистики: {e}")
         return False
+
+def export_plot_as_png(df, func, status_var):
+    """Сохраняет текущий график в PNG файл"""
+    try:
+        if not func[0] or not func[1]:
+            status_var.set("Ошибка: не выбраны оси для графика")
+            return
+            
+        fig = Figure(figsize=(10, 6))
+        ax = fig.add_subplot(111)
+        
+        ax.plot(df[func[0]], df[func[1]])
+        ax.set_xlabel(func[0])
+        ax.set_ylabel(func[1])
+        ax.set_title(f"{func[0]} | {func[1]}")
+        ax.grid(True)
+        return fig
+        
+    except Exception as e:
+        status_var.set(f"Ошибка сохранения: {str(e)}")

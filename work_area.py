@@ -93,8 +93,7 @@ def create_plots_tab(notebook, df, status_var=None):
     plot_btn.grid(row=0, column=4, padx=5, pady=5) # Размещение кнопки
     plot_frame = ttk.Frame(frame) # Фрейм для графика
     plot_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-    
-    return frame
+    return [x_var.get(), y_var.get()]
 
 def plot_data(df, x_col, y_col, parent_frame, status_var):
     """Строит график выбранных данных"""
