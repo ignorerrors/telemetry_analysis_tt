@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox, filedialog
 from data_loader import load_telemetry_data, export_statistics_to_txt, export_plot_as_png
 from work_area import create_basic_info_tab, create_statics_tab, create_plots_tab
 import sv_ttk
-
+from tkinter import Label
 class MainApplication(ttk.Frame):  # Графический интерфейс
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)  # Наследование от предка Frame
@@ -15,11 +15,11 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
 
         self.export_menu = None  # Для обновления кнопок
         self.df = None  # Хранение загруженных данных
+        self.create_plots_tab = None # Будет сохранять значения x, y графиков
 
         self.interface_style()
         self.interface_elements()
         self.setup_layout()
-
     def interface_style(self):
         sv_ttk.set_theme("light")
 
@@ -62,7 +62,8 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
 
 
         help_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Справка", menu=help_menu)
+        menubar.add_cascade(label="Руководство", menu=help_menu)
+        help_menu.add_command(label="Пользователю", command=self.user_manual)
         help_menu.add_command(label="О программе", command=self.btn_about)
 
     def create_tabs(self):
@@ -73,7 +74,7 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
 
         create_basic_info_tab(self.notebook, self.df)
         create_statics_tab(self.notebook, self.df)
-        create_plots_tab(self.notebook, self.df, self.status_var)
+        self.create_plots_tab = create_plots_tab(self.notebook, self.df, self.status_var)
 
     def btn_open(self):
         """Обработчик кнопки 'Открыть'"""
@@ -114,8 +115,7 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         
         if file_path:
             try:
-                d = create_plots_tab(self.notebook, self.df)
-                a = export_plot_as_png(self.df, d, file_path)
+                a = export_plot_as_png(self.df, self.create_plots_tab, file_path)
                 a.savefig(file_path, dpi=300, bbox_inches='tight')
                 self.status_var.set(f"График сохранен как: {file_path}")
                 messagebox.showinfo(
@@ -155,11 +155,29 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
                     f"Не удалось экспортировать статистику:\n{str(e)}"
                 )
 
+    def user_manual(self):
+        """Обработчик кнопки 'Пользователю'"""
+        about_text = """
+        • Загрузите файл в формате csv: 
+          В левом верзнем углу нажмите на кнопку "Файл" -> "Открыть..."
+          Или на английской раскладке нажать  комбинацию клавиш "Ctrl + O"
+        • Рабочая область будет содержать пункты: 
+          Информация, Статистика, Графики
+        • В которых будет находиться: 
+          Информация о данных, Общая статистика, Построение графиков
+        • После успешной загрузки файла будет доступно:
+        Экспорт графиков...
+        Экспорт статистики... \n
+        ПРИМЕЧАНИЕ:
+        • Если ещё не был построе не один график, то при экспорте будет построен график Timestamp | Timestamp
+        """
+        messagebox.showinfo("Пользователю", about_text)
+
     def btn_about(self):
         """Обработчик кнопки 'О программе'"""
         about_text = """
         Анализатор телеметрии
-        Версия 0.1 (Pre-Alpha)
+        Версия 0.2 (Pre-Alpha)
         
         Разработано для анализа и визуализации
         данных телеметрии uav.

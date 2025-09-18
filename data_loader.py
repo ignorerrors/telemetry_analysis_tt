@@ -51,20 +51,20 @@ def export_statistics_to_txt(df, filename):
         print(f"Ошибка экспорта статистики: {e}")
         return False
 
-def export_plot_as_png(df, func, status_var):
+def export_plot_as_png(df, create_plots, status_var):
     """Сохраняет текущий график в PNG файл"""
     try:
-        if not func[0] or not func[1]:
+        if not create_plots[0] or not create_plots[1]:
             status_var.set("Ошибка: не выбраны оси для графика")
             return
             
         fig = Figure(figsize=(10, 6))
         ax = fig.add_subplot(111)
         
-        ax.plot(df[func[0]], df[func[1]])
-        ax.set_xlabel(func[0])
-        ax.set_ylabel(func[1])
-        ax.set_title(f"{func[0]} | {func[1]}")
+        ax.plot(df[create_plots[0]], df[create_plots[1]])
+        ax.set_xlabel(create_plots[0])
+        ax.set_ylabel(create_plots[1])
+        ax.set_title(f"{create_plots[0]} | {create_plots[1]}")
         ax.grid(True)
         return fig
         

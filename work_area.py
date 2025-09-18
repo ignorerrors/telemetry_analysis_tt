@@ -3,6 +3,7 @@ from tkinter import ttk
 import pandas as pd
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+from constants import paremeter_categories
 
 def create_basic_info_tab(notebook, df):
     """Вкладка с информацией о загруженных данных"""
@@ -125,3 +126,32 @@ def plot_data(df, x_col, y_col, parent_frame, status_var):
     except Exception as e:
         error_label = ttk.Label(parent_frame, text=f"Ошибка построения: {str(e)}", foreground="red")
         error_label.pack(pady=10)
+
+    def categorize_parameters(df_columns):
+        """Функция для автоматической категоризации"""
+        categorized = {category: [] for category in paremeter_categories}
+        categorized["Другие"] = []  # Для параметров без категории, если будут допы
+
+        for column in df_columns:
+            found_category = False
+            for category, patterns in paremeter_categories.items():
+                for pattern in patterns:
+                    prefix = pattern[:-2]
+                    if pattern.endswith('.*'): # Будет шаблон типа estimatorStatus.*
+                        prefix = pattern[:-2]
+                        if column.startswith(prefix):
+                            categorized[category].append(column)
+                            found_category = True
+                            break
+                        elif column == pattern:  # Точное совпадение
+                            categorized[category].append(column)
+                            found_category = True
+                            break
+                    if found_category:
+                        break
+                
+                if not found_category:
+                    categorized["Другие"].append(column)
+            
+            # Удаляю пустые категории
+            return {k: v for k, v in categorized.items() if v}
