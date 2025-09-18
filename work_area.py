@@ -65,7 +65,7 @@ def create_statics_tab(notebook, df):
     return frame
 
 
-def create_plots_tab(notebook, df):
+def create_plots_tab(notebook, df, status_var=None):
     """Вкладка с графиками параметров"""
     frame = ttk.Frame(notebook)
     notebook.add(frame, text="Графики")  # Кнопка для статистики
@@ -88,7 +88,7 @@ def create_plots_tab(notebook, df):
     y_combobox.grid(row=0, column=3, padx=5, pady=5)
 
     plot_btn = ttk.Button(control_frame, text="Построить график", 
-                         command=lambda: plot_data(df, x_var.get(), y_var.get(), plot_frame))
+                         command=lambda: plot_data(df, x_var.get(), y_var.get(), plot_frame, status_var))
     
     plot_btn.grid(row=0, column=4, padx=5, pady=5) # Размещение кнопки
     plot_frame = ttk.Frame(frame) # Фрейм для графика
@@ -96,7 +96,7 @@ def create_plots_tab(notebook, df):
     
     return frame
 
-def plot_data(df, x_col, y_col, parent_frame):
+def plot_data(df, x_col, y_col, parent_frame, status_var):
     """Строит график выбранных данных"""
     # Очищаю предыдущий график
     for widget in parent_frame.winfo_children():
@@ -115,14 +115,14 @@ def plot_data(df, x_col, y_col, parent_frame):
         ax.plot(df[x_col], df[y_col])
         ax.set_xlabel(x_col)
         ax.set_ylabel(y_col)
-        ax.set_title(f"{x_col} : {y_col}")
+        ax.set_title(f"{x_col} | {y_col}")
         ax.grid(True) # Включение сетки на графике
         
         # Встраиваю в Tkinter
         canvas = FigureCanvasTkAgg(fig, parent_frame)
         canvas.draw()
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-        
+        status_var.set(f"Создан график: {x_col} | {y_col}")
     except Exception as e:
         error_label = ttk.Label(parent_frame, text=f"Ошибка построения: {str(e)}", foreground="red")
         error_label.pack(pady=10)

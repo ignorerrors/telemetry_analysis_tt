@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from data_loader import load_telemetry_data, export_statistics_to_txt
 from work_area import create_basic_info_tab, create_statics_tab, create_plots_tab
+import sv_ttk
 
 class MainApplication(ttk.Frame):  # Графический интерфейс
     def __init__(self, parent, *args, **kwargs):
@@ -15,8 +16,12 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         self.export_menu = None  # Для обновления кнопок
         self.df = None  # Хранение загруженных данных
 
+        self.interface_style()
         self.interface_elements()
         self.setup_layout()
+
+    def interface_style(self):
+        sv_ttk.set_theme("light")
 
     def interface_elements(self):
         """Создание элементов интерфейса"""
@@ -30,7 +35,7 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
     def setup_layout(self):
         """Расстановка элементов в окне"""
         self.notebook.pack(fill=tk.BOTH, expand=True, padx=5, pady=5) 
-        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X) 
+        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X, padx = 10, pady = 4) 
 
     def top_level_menu(self):
         """Верхнее меню"""
@@ -55,6 +60,7 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
             label="Экспорт статистики...", state="disabled", command=self.export_stats
             )
 
+
         help_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Справка", menu=help_menu)
         help_menu.add_command(label="О программе", command=self.btn_about)
@@ -67,7 +73,7 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
 
         create_basic_info_tab(self.notebook, self.df)
         create_statics_tab(self.notebook, self.df)
-        create_plots_tab(self.notebook, self.df)
+        create_plots_tab(self.notebook, self.df, self.status_var)
 
     def btn_open(self):
         """Обработчик кнопки 'Открыть'"""
@@ -153,7 +159,8 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
 
     def btn_exit(self):
         """Выход из приложения"""
-        self.parent.quit()
+        if messagebox.askyesno("Выход", "Вы уверены, что хотите выйти?"):
+            self.parent.quit()
 
 if __name__ == "__main__":  # Запуск для тестирования этого файла
     root = tk.Tk()
