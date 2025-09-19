@@ -24,14 +24,20 @@ def create_basic_info_tab(notebook, df):
     • Временной диапазон: {df['Timestamp'].min()} - {df['Timestamp'].max()}
     • Длительность записи: {df['Timestamp'].max() - df['Timestamp'].min()}
     """
+    # Добавляю статистику по категориям
+    categorized = categorize_parameters(df.columns)
+    for category, params in categorized.items():
+        info_text += f"\n    • {category}: {len(params)} {pluralize(len(params), ['параметр', 'параметра', 'параметров'])}"
+    info_text += '\n'
+    info_text += f"\n    ЗАГРУЖЕНО: {pd.Timestamp.now()}"
+    
     text_widget.insert(tk.END, info_text)
-    text_widget.config(state=tk.DISABLED)  # Только для чтения
+    text_widget.config(state=tk.DISABLED)
 
-    text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y, padx=(0, 10), pady=10)
 
     return frame
-
 
 def create_statics_tab(notebook, df):
     """Вкладка со статистикой параметров"""
@@ -155,3 +161,17 @@ def categorize_parameters(df_columns):
     
     # Удаляю пустые категории
     return {k: v for k, v in categorized.items() if v}
+
+def pluralize(number, word_forms):
+    """
+    Функция для правильного склонения слов в зависимости от данного числа
+    :param number: число
+    :param word_forms: ("запись", "записи", "записей")
+    :return: строка с правильным окончанием
+    """
+    if number % 10 == 1 and number % 100 != 11:
+        return word_forms[0]
+    elif 2 <= number % 10 <= 4 and (number % 100 < 10 or number % 100 >= 20):
+        return word_forms[1]
+    else:
+        return word_forms[2]

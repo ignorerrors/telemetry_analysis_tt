@@ -11,12 +11,14 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         self.parent = parent
         self.parent.title("Анализатор телеметрии")
         self.parent.geometry("1200x800")
-        icon = tk.PhotoImage(file="static/ping.png")
-        self.parent.iconphoto(True, icon)
         self.export_menu = None  # Для обновления кнопок
         self.df = None  # Хранение загруженных данных
         self.create_plots_tab = None # Будет сохранять значения x, y графиков
-
+        try:
+            icon = tk.PhotoImage(file="static/ping.png")
+            self.parent.iconphoto(True, icon)
+        except: # pylint: disable=W0702
+            pass
         self.interface_style()
         self.interface_elements()
         self.setup_layout()
@@ -121,7 +123,7 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
                     "Успех", 
                     f"График успешно экспортирован в:\n{file_path}"
                 )
-            except Exception as e:
+            except Exception as e: # pylint: disable=W0718
                 messagebox.showerror(
                     "Ошибка экспорта", 
                     f"Не удалось экспортировать график:\n{str(e)}"
