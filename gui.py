@@ -2,8 +2,9 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 from data_loader import load_telemetry_data, export_statistics_to_txt, export_plot_as_png
 from work_area import create_basic_info_tab, create_statics_tab, create_plots_tab
+from work_area import categorize_parameters
 import sv_ttk
-from tkinter import Label
+
 class MainApplication(ttk.Frame):  # Графический интерфейс
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)  # Наследование от предка Frame
@@ -12,7 +13,6 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         self.parent.geometry("1200x800")
         icon = tk.PhotoImage(file="static/ping.png")
         self.parent.iconphoto(True, icon)
-
         self.export_menu = None  # Для обновления кнопок
         self.df = None  # Хранение загруженных данных
         self.create_plots_tab = None # Будет сохранять значения x, y графиков
@@ -50,7 +50,6 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         self.parent.bind("<Control-o>", lambda _: self.btn_open())  # Горячие клавиши
         file_menu.add_separator()
         file_menu.add_command(label="Выход", command=self.btn_exit)
-
         self.export_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Экспорт", menu=self.export_menu)  # Пункт 8.1.4 в tt
         self.export_menu.add_command(
@@ -73,6 +72,7 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
             self.notebook.forget(tab)
 
         create_basic_info_tab(self.notebook, self.df)
+        # self.create_categorized_tabs(self.notebook, self.df)
         create_statics_tab(self.notebook, self.df)
         self.create_plots_tab = create_plots_tab(self.notebook, self.df, self.status_var)
 
@@ -93,7 +93,6 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
             except Exception as e:  # pylint: disable=W0718
                 messagebox.showerror("Ошибка", f"Не удалось загрузить файл:\n{str(e)}")
                 self.status_var.set("Ошибка загрузки файла")
-
     def enable_export_menus(self):
         """Активирует пункты меню экспорта после загрузки данных"""
         self.export_menu.entryconfig(0, state="normal")  # 0, 1 - пункты в выпадающей области 'Экспорт'
@@ -154,6 +153,43 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
                     "Ошибка экспорта", 
                     f"Не удалось экспортировать статистику:\n{str(e)}"
                 )
+    # FIXME: Не знаю как реализовать
+    def create_categorized_tabs(self, notebook, df):
+        """Создает вкладки для каждой категории параметров"""
+        # Автоматически categorizing параметров
+        categorized = categorize_parameters(df.columns)
+        
+        # Создаем вкладку для каждой категории
+        for category, parameters in categorized.items():
+            frame = ttk.Frame(notebook)
+            notebook.add(frame, text=category)
+            
+            # Заголовок
+            title_label = ttk.Label(frame, text=f"Категория: {category}", 
+                                font=("Arial", 12, "bold"))
+            title_label.pack(pady=10)
+            
+            # Список параметров
+            if parameters:
+                text_widget = tk.Text(frame, wrap=tk.WORD, width=80, height=15)
+                scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=text_widget.yview)
+                text_widget.configure(yscrollcommand=scrollbar.set)
+                
+                info_text = f"Параметры ({len(parameters)}):\n\n"
+                for param in sorted(parameters):
+                    non_null = df[param].count()
+                    dtype = str(df[param].dtype)
+                    info_text += f"• {param} ({dtype}, заполнено: {non_null}/{len(df)})\n"
+                
+                text_widget.insert(tk.END, info_text)
+                text_widget.config(state=tk.DISABLED)
+                
+                text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10)
+                scrollbar.pack(side=tk.RIGHT, fill=tk.Y, padx=(0, 10))
+            else:
+                ttk.Label(frame, text="Нет параметров в этой категории").pack(pady=20)
+        
+        return notebook
 
     def user_manual(self):
         """Обработчик кнопки 'Пользователю'"""
