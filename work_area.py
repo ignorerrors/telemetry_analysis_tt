@@ -175,3 +175,41 @@ def pluralize(number, word_forms):
         return word_forms[1]
     else:
         return word_forms[2]
+
+def create_categorized_tabs(notebook, df):
+    """Создает вкладки для каждой категории параметров"""
+
+    categorized = categorize_parameters(df.columns)
+    frame = ttk.Frame(notebook)
+    notebook.add(frame, text="Категории")
+
+    text_widget = tk.Text(frame, wrap=tk.WORD, width=80, height=20)
+    scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=text_widget.yview)
+    text_widget.configure(yscrollcommand=scrollbar.set)
+    info_text = ''
+    total_parameters= 0
+    # Создаем вкладку для каждой категории
+    for category, parameters in categorized.items():
+        info_text += f"\n    КАТЕГОРИЯ: {category}\n"
+        info_text += '    ' + "-" * 40 + "\n"
+        
+        if parameters:
+            info_text += f"    Параметров: {len(parameters)}\n\n"
+            for param in sorted(parameters):
+                non_null = df[param].count()
+                total = len(df)
+                dtype = str(df[param].dtype) # Тип параметра
+                info_text += f"    • {param}\n"
+                info_text += f"    Тип: {dtype}, Заполнено: {non_null}/{total}\n"
+                info_text += "\n"
+            total_parameters += len(parameters)
+        else:
+            info_text += "    Нет параметров в этой категории\n"
+    
+    text_widget.insert(tk.END, info_text)
+    text_widget.config(state=tk.DISABLED)
+
+    text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y, padx=10, pady=10)
+
+    return notebook
