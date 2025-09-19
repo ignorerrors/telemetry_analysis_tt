@@ -55,7 +55,7 @@ def create_statics_tab(notebook, df):
                 f"{df[column].std():.3f}",
                 f"{df[column].count()}/{len(df)}",
             ]
-            tree.insert("", "end", values=stats)  # Добавляем строку в таблицу
+            tree.insert("", "end", values=stats)  # Добавляю строку в таблицу
 
     scrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL, command=tree.yview)
     tree.configure(yscrollcommand=scrollbar.set)
@@ -135,7 +135,7 @@ def categorize_parameters(df_columns):
     for column in df_columns:
         found_category = False
         for category, patterns in paremeter_categories.items():
-            # Проверяем совпадение по паттернам
+            # Проверяю совпадение по паттернам
             for pattern in patterns:
                 if pattern.endswith('.*'):  # Будет шаблон типа estimatorStatus.*
                     prefix = pattern[:-2]
