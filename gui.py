@@ -1,9 +1,14 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
-from data_loader import load_telemetry_data, export_statistics_to_txt, export_plot_as_png
-from work_area import create_basic_info_tab, create_statics_tab, create_plots_tab
-from work_area import categorize_parameters, create_categorized_tabs
 import sv_ttk
+from data_loader import (
+    load_telemetry_data,
+    export_statistics_to_txt,
+    export_plot_as_png,
+)
+from work_area import create_basic_info_tab, create_statics_tab, create_plots_tab
+from work_area import create_categorized_tabs
+
 
 class MainApplication(ttk.Frame):  # Графический интерфейс
     def __init__(self, parent, *args, **kwargs):
@@ -13,15 +18,16 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         self.parent.geometry("1200x800")
         self.export_menu = None  # Для обновления кнопок
         self.df = None  # Хранение загруженных данных
-        self.create_plots_tab = None # Будет сохранять значения x, y графиков
+        self.create_plots_tab = None  # Будет сохранять значения x, y графиков
         try:
             icon = tk.PhotoImage(file="static/ping.png")
             self.parent.iconphoto(True, icon)
-        except: # pylint: disable=W0702
+        except:  # pylint: disable=W0702
             pass
         self.interface_style()
         self.interface_elements()
         self.setup_layout()
+
     def interface_style(self):
         sv_ttk.set_theme("light")
 
@@ -31,13 +37,13 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         self.notebook = ttk.Notebook(self.parent)  # Рабочая область
 
         self.status_var = tk.StringVar()  # Статус бар
-        self.status_var.set("Готов к работе")  # RIDGE - эффект выпуклой выемки, W - левый край
-        self.status_bar = ttk.Label(self.parent, textvariable=self.status_var, relief=tk.RIDGE, anchor=tk.W)
+        self.status_var.set("Готов к работе")  # убрал anchor=tk.W, relief=tk.GROOVE, не подходит к теме
+        self.status_bar = ttk.Label(self.parent, textvariable=self.status_var)
 
     def setup_layout(self):
         """Расстановка элементов в окне"""
-        self.notebook.pack(fill=tk.BOTH, expand=True, padx=5, pady=5) 
-        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X, padx = 10, pady = 4) 
+        self.notebook.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=4)
 
     def top_level_menu(self):
         """Верхнее меню"""
@@ -54,13 +60,8 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         file_menu.add_command(label="Выход", command=self.btn_exit)
         self.export_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Экспорт", menu=self.export_menu)  # Пункт 8.1.4 в tt
-        self.export_menu.add_command(
-            label="Экспорт графиков...", state="disabled", command=self.export_graphs
-            )
-        self.export_menu.add_command(
-            label="Экспорт статистики...", state="disabled", command=self.export_stats
-            )
-
+        self.export_menu.add_command(label="Экспорт графиков...", state="disabled", command=self.export_graphs)
+        self.export_menu.add_command(label="Экспорт статистики...", state="disabled", command=self.export_stats)
 
         help_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Руководство", menu=help_menu)
@@ -92,9 +93,10 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
                 self.status_var.set(f"Успех! Загружено: {len(self.df)} записей")
                 self.enable_export_menus()
                 self.create_tabs()
-            except Exception as e:  # pylint: disable=W0718
+            except Exception as e:
                 messagebox.showerror("Ошибка", f"Не удалось загрузить файл:\n{str(e)}")
                 self.status_var.set("Ошибка загрузки файла")
+
     def enable_export_menus(self):
         """Активирует пункты меню экспорта после загрузки данных"""
         self.export_menu.entryconfig(0, state="normal")  # 0, 1 - пункты в выпадающей области 'Экспорт'
@@ -110,25 +112,23 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
             filetypes=[
                 ("PNG files", "*.png"),
                 ("PDF files", "*.pdf"),
-                ("Все файлы", "*.*")
-            ]
+                ("Все файлы", "*.*"),
+            ],
         )
-        
+
         if file_path:
             try:
                 a = export_plot_as_png(self.df, self.create_plots_tab, file_path)
-                a.savefig(file_path, dpi=300, bbox_inches='tight')
+                a.savefig(file_path, dpi=300, bbox_inches="tight")
                 self.status_var.set(f"График сохранен как: {file_path}")
                 messagebox.showinfo(
-                    "Успех", 
-                    f"График успешно экспортирован в:\n{file_path}"
+                    "Успех", f"График успешно экспортирован в:\n{file_path}"
                 )
-            except Exception as e: # pylint: disable=W0718
+            except Exception as e:
                 messagebox.showerror(
-                    "Ошибка экспорта", 
-                    f"Не удалось экспортировать график:\n{str(e)}"
-                    )
-    
+                    "Ошибка экспорта", f"Не удалось экспортировать график:\n{str(e)}"
+                )
+
     def export_stats(self):
         """Экспорт статистики"""
         default_filename = "telemetry_statistics.txt"
@@ -136,24 +136,18 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
             title="Сохранить статистику",
             initialfile=default_filename,
             defaultextension=".txt",
-            filetypes=[
-                ("Текстовые файлы", "*.txt"),
-                ("Все файлы", "*.*")
-            ]
+            filetypes=[("Текстовые файлы", "*.txt"), ("Все файлы", "*.*")],
         )
-        
+
         if file_path:
             try:
                 export_statistics_to_txt(self.df, file_path)
                 self.status_var.set(f"Статистика экспортирована: {file_path}")
-                messagebox.showinfo(
-                    "Успех", 
-                    f"Статистика успешно экспортирована в:\n{file_path}"
-                )
+                messagebox.showinfo("Успех", f"Статистика успешно экспортирована в:\n{file_path}")
             except Exception as e:
                 messagebox.showerror(
-                    "Ошибка экспорта", 
-                    f"Не удалось экспортировать статистику:\n{str(e)}"
+                    "Ошибка экспорта",
+                    f"Не удалось экспортировать статистику:\n{str(e)}",
                 )
 
     def user_manual(self):
@@ -179,7 +173,7 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         ПРИМЕЧАНИЕ:
         • Если ещё не был построен не один график, то при экспорте будет построен график Timestamp | Timestamp
         """
-        messagebox.showinfo("Пользователю", about_text, icon='question')
+        messagebox.showinfo("Пользователю", about_text, icon="question")
 
     def btn_about(self):
         """Обработчик кнопки 'О программе'"""
