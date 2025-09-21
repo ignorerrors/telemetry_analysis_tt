@@ -4,6 +4,8 @@ import pandas as pd
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from constants import paremeter_categories
+from plotting_agraph import PlotManager
+
 
 def create_basic_info_tab(notebook, df):
     """Вкладка с информацией о загруженных данных"""
@@ -77,7 +79,7 @@ def create_plots_tab(notebook, df, status_var=None):
     frame = ttk.Frame(notebook)
     notebook.add(frame, text="Графики")  # Кнопка для статистики
 
-    control_frame = ttk.Frame(frame) # Фрейм для выбора параметров
+    control_frame = ttk.Frame(frame)  # Фрейм для выбора параметров
     control_frame.pack(fill=tk.X, padx=10, pady=5)
 
     # Выбор параметра для оси X
@@ -94,13 +96,24 @@ def create_plots_tab(notebook, df, status_var=None):
     y_combobox['values'] = list(df.columns)
     y_combobox.grid(row=0, column=3, padx=5, pady=5)
 
-    plot_btn = ttk.Button(control_frame, text="Построить график", 
-                         command=lambda: plot_data(df, x_var.get(), y_var.get(), plot_frame, status_var))
-    
-    plot_btn.grid(row=0, column=4, padx=5, pady=5) # Размещение кнопки
-    plot_frame = ttk.Frame(frame) # Фрейм для графика
+    # Фрейм для графика
+    plot_frame = ttk.Frame(frame)
     plot_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
-    return [x_var.get(), y_var.get()]
+    
+    # Создаю менеджер графиков
+    plot_manager = PlotManager(plot_frame, status_var)
+    
+    # Функция для обновления графика
+    def update_plot():
+        plot_manager.create_plot(df, x_var.get(), y_var.get())
+    
+    plot_btn = ttk.Button(control_frame, text="Построить график", command=update_plot)
+    plot_btn.grid(row=0, column=4, padx=5, pady=5)
+    
+    # Строю начальный график
+    update_plot()
+    
+    return plot_manager
 
 def plot_data(df, x_col, y_col, parent_frame, status_var):
     """Строит график выбранных данных"""
