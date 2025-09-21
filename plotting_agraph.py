@@ -23,7 +23,7 @@ class PlotManager:
 
         try:
             # Создаю новую фигуру
-            self.current_figure = Figure(figsize=(10, 6))
+            self.current_figure = Figure(figsize=(10, 6))  # В дюймах
             ax = self.current_figure.add_subplot(111)
 
             # Строю график

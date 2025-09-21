@@ -1,8 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
 from constants import paremeter_categories
 from plotting_agraph import PlotManager
 
@@ -114,44 +112,11 @@ def create_plots_tab(notebook, df, status_var=None):
     # Строю начальный график
     update_plot()
 
-    return plot_manager
-
-
-def plot_data(df, x_col, y_col, parent_frame, status_var):
-    """Строит график выбранных данных"""
-    # Очищаю предыдущий график
-    for widget in parent_frame.winfo_children():
-        widget.destroy()
-
-    # Проверка, передаются ли данные
-    if not x_col or not y_col:
-        return
-
-    try:
-        # Создаю фигуру matplotlib
-        fig = Figure(figsize=(10, 6))  # В дюймах
-        ax = fig.add_subplot(111)  #  1x1 сетка, первая позиция
-
-        # Строю график
-        ax.plot(df[x_col], df[y_col])
-        ax.set_xlabel(x_col)
-        ax.set_ylabel(y_col)
-        ax.set_title(f"{x_col} | {y_col}")
-        ax.grid(True)  # Включение сетки на графике
-
-        # Встраиваю в Tkinter
-        canvas = FigureCanvasTkAgg(fig, parent_frame)
-        canvas.draw()
-        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-        status_var.set(f"Создан график: {x_col} | {y_col}")
-    except Exception as e:
-        error_label = ttk.Label(parent_frame, text=f"Ошибка построения: {str(e)}", foreground="red")
-        error_label.pack(pady=10)
-
+    return [x_var.get(), y_var.get()]
 
 def categorize_parameters(df_columns):
     """Функция для автоматической категоризации"""
-    categorized = {category: [] for category in paremeter_categories.keys()}
+    categorized = {category: [] for category in paremeter_categories}
     categorized["Другие"] = []  # Для параметров без категории, если будут допы
 
     for column in df_columns:

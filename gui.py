@@ -9,7 +9,6 @@ from data_loader import (
 from work_area import create_basic_info_tab, create_statics_tab, create_plots_tab
 from work_area import create_categorized_tabs
 
-
 class MainApplication(ttk.Frame):  # Графический интерфейс
     def __init__(self, parent, *args, **kwargs):
         super().__init__(parent, *args, **kwargs)  # Наследование от предка Frame

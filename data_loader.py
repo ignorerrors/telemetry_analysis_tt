@@ -54,17 +54,19 @@ def export_statistics_to_txt(df, filename):
 def export_plot_as_png(df, create_plots, status_var):
     """Сохраняет текущий график в PNG файл"""
     try:
-        if not create_plots[0] or not create_plots[1]:
+        x_var = create_plots[0]
+        y_var = create_plots[1]
+        if not x_var or not y_var:
             status_var.set("Ошибка: не выбраны оси для графика")
             return
             
         fig = Figure(figsize=(10, 6))
         ax = fig.add_subplot(111)
         
-        ax.plot(df[create_plots[0]], df[create_plots[1]])
-        ax.set_xlabel(create_plots[0])
-        ax.set_ylabel(create_plots[1])
-        ax.set_title(f"{create_plots[0]} | {create_plots[1]}")
+        ax.plot(df[x_var], df[y_var])
+        ax.set_xlabel(x_var)
+        ax.set_ylabel(y_var)
+        ax.set_title(f"{x_var} | {y_var}")
         ax.grid(True)
         return fig
         
