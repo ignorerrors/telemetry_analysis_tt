@@ -6,8 +6,8 @@ from blackboard.data_loader import (
     export_statistics_to_txt,
     export_plot_as_png,
 )
-from blackboard.work_area import create_basic_info_tab, create_statics_tab, create_plots_tab
-from blackboard.work_area import create_categorized_tabs
+from blackboard.work_area import create_basic_info_tab, create_statics_tab
+from blackboard.work_area import create_categorized_tabs, create_plots_tab
 
 class MainApplication(ttk.Frame):  # Графический интерфейс
     def __init__(self, parent, *args, **kwargs):
@@ -59,8 +59,16 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         file_menu.add_command(label="Выход", command=self.btn_exit)
         self.export_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Экспорт", menu=self.export_menu)  # Пункт 8.1.4 в tt
-        self.export_menu.add_command(label="Экспорт графиков...", state="disabled", command=self.export_graphs)
-        self.export_menu.add_command(label="Экспорт статистики...", state="disabled", command=self.export_stats)
+        self.export_menu.add_command(
+            label="Экспорт графиков...",
+            state="disabled",
+            command=self.export_graphs
+        )
+        self.export_menu.add_command(
+            label="Экспорт статистики...",
+            state="disabled",
+            command=self.export_stats
+        )
 
         help_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Руководство", menu=help_menu)
@@ -170,7 +178,8 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         Экспорт статистики - Сохраняет текстовый файл с полной статистикой
         Экспорт графиков - Сохраняет графики в формате PNG/PDF
         ПРИМЕЧАНИЕ:
-        • Если ещё не был построен не один график, то при экспорте будет построен график Timestamp | Timestamp
+        • Если ещё не был построен не один график, 
+          то при экспорте будет построен базовый график Timestamp | Timestamp
         """
         messagebox.showinfo("Пользователю", about_text, icon="question")
 

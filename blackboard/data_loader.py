@@ -28,7 +28,8 @@ def export_statistics_to_txt(df, filename):
             f.write("=" * (max_param_length + 52 + len(str(len(df)))) + "\n\n")
 
             # Шапка таблицы
-            f.write(f"{'Параметр':<{max_param_length}} {'Мин':<10} {'Макс':<10} {'Среднее':<10} {'Разброс':<10} {'Заполнено':<12}\n")
+            text_write = f'{'Мин':<10} {'Макс':<10} {'Среднее':<10} {'Разброс':<10} {'Заполнено':<12}'
+            f.write(f"{'Параметр':<{max_param_length}} {text_write}\n")
             f.write("-" * (max_param_length + 52 + len(str(len(df)))) + "\n")
 
             for column in df.columns:  # Данные по каждому параметру
@@ -41,7 +42,8 @@ def export_statistics_to_txt(df, filename):
                         f"{df[column].std():.3f}",
                         f"{df[column].count()}/{len(df)}",
                     ]
-                    f.write(f"{stats[0]:<{max_param_length}} {stats[1]:<10} {stats[2]:<10} {stats[3]:<10} {stats[4]:<10} {stats[5]:<12}\n")
+                    text_stats = f'{stats[1]:<10} {stats[2]:<10} {stats[3]:<10} {stats[4]:<10} {stats[5]:<12}'
+                    f.write(f"{stats[0]:<{max_param_length}} {text_stats}\n")
 
             f.write("\n" + "=" * 50 + "\n")
             f.write(f"Файл сгенерирован: {pd.Timestamp.now()}\n")

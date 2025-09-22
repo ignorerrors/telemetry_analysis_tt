@@ -27,7 +27,8 @@ def create_basic_info_tab(notebook, df):
     # Добавляю статистику по категориям
     categorized = categorize_parameters(df.columns)
     for category, params in categorized.items():
-        info_text += f"\n    • {category}: {len(params)} {pluralize(len(params), ['параметр', 'параметра', 'параметров'])}"
+        func_text = pluralize(len(params), ['параметр', 'параметра', 'параметров'])
+        info_text += f"\n    • {category}: {len(params)} {func_text}"
     info_text += "\n"
     info_text += f"\n    ЗАГРУЖЕНО: {pd.Timestamp.now()}"
 

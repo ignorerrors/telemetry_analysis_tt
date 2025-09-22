@@ -29,7 +29,7 @@ class PlotManager:
             # Строю график
             ax.plot(df[x_col], df[y_col])
             if parameter_units[x_col]: # Подписи на графике с единицами измерения и без
-                ax.set_xlabel(f'{x_col}, {parameter_units[x_col]}')  
+                ax.set_xlabel(f'{x_col}, {parameter_units[x_col]}') 
             else:
                 ax.set_xlabel(f'{x_col}')
             if parameter_units[y_col]:
@@ -50,7 +50,10 @@ class PlotManager:
             return self.current_figure
 
         except Exception as e:
-            error_label = ttk.Label(self.parent_frame, text=f"Ошибка построения: {str(e)}", foreground="red")
+            error_label = ttk.Label(
+                self.parent_frame,
+                text=f"Ошибка построения: {str(e)}", foreground="red"
+            )
             error_label.pack(pady=10)
             if self.status_var:
                 self.status_var.set(f"Ошибка: {str(e)}")
