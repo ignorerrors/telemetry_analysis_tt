@@ -1,13 +1,13 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import sv_ttk
-from data_loader import (
+from blackboard.data_loader import (
     load_telemetry_data,
     export_statistics_to_txt,
     export_plot_as_png,
 )
-from work_area import create_basic_info_tab, create_statics_tab, create_plots_tab
-from work_area import create_categorized_tabs
+from blackboard.work_area import create_basic_info_tab, create_statics_tab, create_plots_tab
+from blackboard.work_area import create_categorized_tabs
 
 class MainApplication(ttk.Frame):  # Графический интерфейс
     def __init__(self, parent, *args, **kwargs):

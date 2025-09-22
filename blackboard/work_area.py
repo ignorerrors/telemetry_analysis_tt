@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import pandas as pd
 from constants import paremeter_categories
-from plotting_agraph import PlotManager
+from blackboard.plotting_agraph import PlotManager
 
 
 def create_basic_info_tab(notebook, df):

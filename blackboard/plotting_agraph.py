@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-
+from constants import parameter_units
 
 class PlotManager:
     """Менеджер для управления графиками"""
@@ -28,8 +28,14 @@ class PlotManager:
 
             # Строю график
             ax.plot(df[x_col], df[y_col])
-            ax.set_xlabel(x_col)  # Подписи на графике
-            ax.set_ylabel(y_col)
+            if parameter_units[x_col]: # Подписи на графике с единицами измерения и без
+                ax.set_xlabel(f'{x_col}, {parameter_units[x_col]}')  
+            else:
+                ax.set_xlabel(f'{x_col}')
+            if parameter_units[y_col]:
+                ax.set_ylabel(f'{y_col}, {parameter_units[y_col]}')
+            else:
+                ax.set_ylabel(f'{y_col}')
             ax.set_title(f"{x_col} | {y_col}")
             ax.grid(True)  # Отображение сетки
 
