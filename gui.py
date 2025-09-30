@@ -192,7 +192,7 @@ class MainApplication(ttk.Frame):  # Графический интерфейс
         Разработано для анализа и визуализации
         данных телеметрии uav.
         
-        https://github.com/raiserror/telemetry_analysis_tt
+        https://github.com/ignorerrors/telemetry_analysis_tt
         """
         messagebox.showinfo("О программе", about_text)
 
