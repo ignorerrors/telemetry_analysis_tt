@@ -33,7 +33,7 @@ desktop-приложение для анализа и визуализации �
 
 ### Клонирование репозитория
 ```
-git clone https://github.com/ignorerrors/telemetry_analysis_tt.git
+git clone https://github.com/timerror/telemetry_analysis_tt.git
 cd telemetry_analysis_tt
 ```
 
@@ -44,4 +44,4 @@ cd telemetry_analysis_tt
 `python main.py`
 
 ### 🐛 Сообщение об ошибках
-Нашли ошибку? [Создайте issue](https://github.com/ignorerrors/telemetry_analysis_tt/issues) с подробным описанием.
+Нашли ошибку? [Создайте issue](https://github.com/timerror/telemetry_analysis_tt/issues) с подробным описанием.
